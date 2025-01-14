@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.prova1.general_functions">
+   <children>
+      <Label layoutX="187.0" layoutY="14.0" text="Calcular IP">
+         <font>
+            <Font size="42.0" />
+         </font>
+      </Label>
+      <Button fx:id="load_project_btn_home" layoutX="470.0" layoutY="100.0" mnemonicParsing="false" onAction="#project_search" text="Carrega un projecte" />
+      <Button fx:id="report_total_btn" layoutX="491.0" layoutY="138.0" mnemonicParsing="false" onAction="#report_total" text="Report Total" />
+      <Button fx:id="report_rang_IP" layoutX="502.0" layoutY="172.0" mnemonicParsing="false" onAction="#report_IP_rang" text="Rang IP" />
+      <Button fx:id="report_cidr" layoutX="477.0" layoutY="204.0" mnemonicParsing="false" onAction="#report_mascara" text="Màscara de Xarxa" />
+      <Button fx:id="report_binari" layoutX="507.0" layoutY="237.0" mnemonicParsing="false" onAction="#report_IP_binari" text="Binari" />
+      <Button fx:id="calcularIP_tohome_btn" layoutX="539.0" layoutY="361.0" mnemonicParsing="false" onAction="#sceneBuild" text="Menu" />
+      <TextArea fx:id="report_area" editable="false" layoutX="20.0" layoutY="72.0" prefHeight="298.0" prefWidth="445.0" />
+   </children>
+</Pane>

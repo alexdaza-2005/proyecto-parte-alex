@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.prova1.general_functions">
+   <children>
+      <Button layoutX="447.0" layoutY="348.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="148.0" text="Menú" />
+      <Label layoutX="40.0" layoutY="20.0" prefHeight="62.0" prefWidth="483.0" text="CONFIGURACIO SWITCH">
+         <font>
+            <Font size="42.0" />
+         </font>
+      </Label>
+      <TextArea layoutX="23.0" layoutY="100.0" prefHeight="280.0" prefWidth="399.0" />
+       <Button fx:id="load_project_btn_home" layoutX="470.0" layoutY="100.0" mnemonicParsing="false" onAction="#project_search" text="Carrega un projecte" />
+      <Button layoutX="489.0" layoutY="153.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="95.0" text="Manual" />
+   </children>
+</Pane>

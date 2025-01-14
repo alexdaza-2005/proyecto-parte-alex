@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane fx:id="home" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.prova1.general_functions">
+   <children>
+      <Button fx:id="cip" layoutX="269.0" layoutY="142.0" mnemonicParsing="false" onAction="#sceneBuild" text="Calcul IP" />
+      <Label layoutX="153.0" text="Dora Asix">
+         <font>
+            <Font size="70.0" />
+         </font>
+      </Label>
+      <Button fx:id="conf_ro" layoutX="235.0" layoutY="181.0" mnemonicParsing="false" text="Configuració Routers" />
+      <Button fx:id="conf_sw" layoutX="233.0" layoutY="217.0" mnemonicParsing="false" text="Configuració Switchos" />
+
+      <Button fx:id="lan_info_home_btn" layoutX="264.0" layoutY="255.0" mnemonicParsing="false" onAction="#sceneBuild" text="LAN INFO." />
+      <Button fx:id="exit_home" layoutX="508.0" layoutY="350.0" mnemonicParsing="false" onAction="#exit" text="Sortir" />
+
+   </children>
+</Pane>
