@@ -784,3 +784,161 @@ public class general_functions implements Initializable {
 
 
 }
+ public class generalFunctions implements Initializable {
+        //variables y objetos
+        @FXML //botones
+        private Button lan_info_home_btn, home_menu_lan_info, cip, calcularIP_tohome_btn;
+        @FXML
+        private TextField ruta_projecte, n_projecte, ip_xarxa, n_routers, n_switch, n_subxarxes, n_switchos; // Añadido n_switchos
+        @FXML
+        private ChoiceBox mascares;
+        @FXML
+        private TextArea names_users_subx, report_area, config_recommendations; // Añadido config_recommendations
+
+        //datos de los proyectos existentes INICIO
+        String projectName="";
+        String IP = "";
+        String CIDR="";
+        String ROUTERS="";
+        String SWITCH="";
+        String SUBNET="";
+        String SUBNET_INFO="";
+
+
+        //EXPRESIONES REGULARES (verificaciones de archivo/datos)
+        String empty_textfield= "[^\\d\\w\\s]"; // verifica que no haya caracteres o números
+        String is_number = "\\d+"; // verifica que solo haya números
+        String is_IP = "^((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)\\.){3}(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)$"; // verifica si es una IP válida
+        String istxt = "[^\\W]\\w+\\.txt$";
+        String corrtctTextArea= "[\\w]+:[\\s|\\t]*[\\d]+[^\\W]";
+        String IP_check = "^IP_DE_XARXA=\\d{1,3}(\\.\\d{1,3}){3}$";
+        String cidr_check = "^MASCARA_DE_XARXA=\\/(30|[12]?[1-9])$";
+        String general_info_check = "(ROUTERS|SWITCH|SUBXARXA)=[\\d]";
+
+        // para cambios de escena
+        private Stage stage;
+        private Scene scene;
+        private Parent root;
+
+        DirectoryChooser dc = new DirectoryChooser(); //abre a partir del buscador de archivos
+        project_Data PROJECT_DATA;
+
+        @Override
+        public void initialize(URL url, ResourceBundle resourceBundle) {
+            System.out.println("Initialize triggered");
+            fillmask();
+        }
+
+        @FXML
+        public void fillmask() {
+            System.out.println("fillmask triggered");
+            if (mascares == null) {
+                System.out.println("Error: mascares no está inicializado o no está en el formulario adecuado");
+                return;
+            }
+            for (int i = 1; i <= 30; i++) {
+                mascares.getItems().add("/" + i);
+            }
+            System.out.println("Opciones añadidas al ChoiceBox");
+        }
+            //condicional para que el numero de switches sea en la cantidad necesaria
+        @FXML
+        public void configureSwitchos() {
+            try {
+                int numSwitchos = Integer.parseInt(n_switchos.getText());
+
+                if (numSwitchos <= 0) {
+                    popupERROR("El número de switchos debe ser mayor que cero.", "Error");
+                    return;
+                } else if (numSwitchos > 48) {
+                    popupERROR("El número máximo permitido de switchos es 48.", "Error");
+                    return;
+                }
+
+                StringBuilder recommendations = new StringBuilder("Recomendaciones para " + numSwitchos + " switchos:\n\n");
+
+                for (int i = 1; i <= numSwitchos; i++) {
+                    recommendations.append("=== Configuración para Switch ").append(i).append(" ===\n");
+
+                    switch (i) {
+                        case 1:
+                            System.out.println("- Este es el switch principal (root bridge):");
+                            System.out.println("  * Configura la VLAN de administración.");
+                            System.out.println("  * Activa el protocolo Rapid Spanning Tree (RSTP).");
+                            System.out.println("  * Habilita enlaces troncales y prioriza el tráfico crítico.");
+                            System.out.println("  * Puerto 1: Conexión al router principal.");
+                            System.out.println("  * Puerto 2-4: Enlaces troncales a switches secundarios.");
+                            break;
+                        case 2:
+                            System.out.println("- Este switch maneja tráfico de usuarios clave:");
+                            System.out.println("  * Configura VLANs específicas para departamentos importantes.");
+                            System.out.println("  * Implementa Port Security para restringir accesos no autorizados.");
+                            System.out.println("  * Configura enlaces redundantes hacia el switch principal.");
+                            System.out.println("  * Puerto 1: Enlace troncal al switch principal.");
+                            System.out.println("  * Puertos 2-10: Conexión a estaciones de trabajo clave.");
+                            break;
+                        case 3:
+                            System.out.println("- Este switch es para servidores:");
+                            System.out.println("  * Configura VLANs exclusivas para servidores.");
+                            System.out.println("  * Habilita EtherChannel para mejorar el rendimiento entre servidores.");
+                            System.out.println("  * Implementa QoS para priorizar el tráfico crítico del servidor.");
+                            System.out.println("  * Puertos 1-4: Conexión a servidores principales.");
+                            System.out.println("  * Puerto 5: Enlace troncal al switch principal.");
+                            break;
+                        case 4:
+                            System.out.println("- Este switch se utiliza para puntos de acceso inalámbrico:");
+                            System.out.println("  * Configura VLANs para tráfico Wi-Fi y clientes.");
+                            System.out.println("  * Habilita medidas de seguridad como 802.1X en los puertos de acceso.");
+                            System.out.println("  * Monitorea el tráfico en tiempo real mediante SNMP.");
+                            System.out.println("  * Puertos 1-8: Conexión a puntos de acceso inalámbrico.");
+                            break;
+                        case 5:
+                            System.out.println("- Este switch se dedica a redundancia y backups:");
+                            System.out.println("  * Configura enlaces redundantes con el switch principal.");
+                            System.out.println("  * Realiza backups automáticos de configuración cada semana.");
+                            System.out.println("  * Monitorea logs en busca de errores o advertencias.");
+                            System.out.println("  * Puerto 1: Enlace redundante al switch principal.");
+                            System.out.println("  * Puerto 2-4: Conexión a dispositivos de almacenamiento.");
+                            break;
+                        default:
+                            System.out.println("- Switch genérico para expansión de red:");
+                            System.out.println("  * Configura VLANs según necesidades específicas de la zona.");
+                            System.out.println("  * Habilita enlaces troncales y spanning-tree.");
+                            System.out.println("  * Supervisa el rendimiento con SNMP y realiza pruebas de conectividad periódicas.");
+                            System.out.println("  * Puerto 1: Enlace troncal al switch principal.");
+                            System.out.println("  * Puertos 2-24: Conexión a dispositivos de la red local.");
+                            break;
+                    }
+
+                    recommendations.append("- Asegúrate de probar la conectividad tras aplicar la configuración.\n\n");
+                }
+
+                config_recommendations.setText(recommendations.toString());
+                popupINFO("Configuración recomendada generada con éxito.", "Información");
+
+            } catch (NumberFormatException e) {
+                popupERROR("Por favor, introduce un número válido de switchos.", "Error");
+            }
+        }
+
+        public void popupINFO(String message, String header) {
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Información");
+            alert.setHeaderText(header);
+            alert.setContentText(message);
+            alert.showAndWait();
+        }
+
+        public void popupERROR(String message, String header) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(header);
+            alert.setContentText(message);
+            alert.showAndWait();
+        }
+
+    }
+
+
+
+}
