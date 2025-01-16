@@ -783,8 +783,8 @@ public class general_functions implements Initializable {
     }
 
 
-}
- public class generalFunctions implements Initializable {
+
+    public class generalFunctions implements Initializable {
         //variables y objetos
         @FXML //botones
         private Button lan_info_home_btn, home_menu_lan_info, cip, calcularIP_tohome_btn;
@@ -796,21 +796,23 @@ public class general_functions implements Initializable {
         private TextArea names_users_subx, report_area, config_recommendations; // Añadido config_recommendations
 
         //datos de los proyectos existentes INICIO
-        String projectName="";
+        String projectName = "";
         String IP = "";
-        String CIDR="";
-        String ROUTERS="";
-        String SWITCH="";
-        String SUBNET="";
-        String SUBNET_INFO="";
+        String CIDR = "";
+        String ROUTERS = "";
+        String SWITCH = "";
+        String SUBNET = "";
+        String SUBNET_INFO = "";
 
+        // Array para almacenar la configuración de cada switch
+        private String[] switchConfigurations;
 
         //EXPRESIONES REGULARES (verificaciones de archivo/datos)
-        String empty_textfield= "[^\\d\\w\\s]"; // verifica que no haya caracteres o números
+        String empty_textfield = "[^\\d\\w\\s]"; // verifica que no haya caracteres o números
         String is_number = "\\d+"; // verifica que solo haya números
         String is_IP = "^((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)\\.){3}(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)$"; // verifica si es una IP válida
         String istxt = "[^\\W]\\w+\\.txt$";
-        String corrtctTextArea= "[\\w]+:[\\s|\\t]*[\\d]+[^\\W]";
+        String corrtctTextArea = "[\\w]+:[\\s|\\t]*[\\d]+[^\\W]";
         String IP_check = "^IP_DE_XARXA=\\d{1,3}(\\.\\d{1,3}){3}$";
         String cidr_check = "^MASCARA_DE_XARXA=\\/(30|[12]?[1-9])$";
         String general_info_check = "(ROUTERS|SWITCH|SUBXARXA)=[\\d]";
@@ -841,7 +843,8 @@ public class general_functions implements Initializable {
             }
             System.out.println("Opciones añadidas al ChoiceBox");
         }
-            //condicional para que el numero de switches sea en la cantidad necesaria
+
+        //condicional para que el numero de switches sea en la cantidad necesaria
         @FXML
         public void configureSwitchos() {
             try {
@@ -855,62 +858,46 @@ public class general_functions implements Initializable {
                     return;
                 }
 
-                StringBuilder recommendations = new StringBuilder("Recomendaciones para " + numSwitchos + " switchos:\n\n");
+                // Inicializar el array para almacenar configuraciones
+                switchConfigurations = new String[numSwitchos];
+
+                StringBuilder recommendations = new StringBuilder("=== Pasos Básicos para Configurar un Switch ===\n\n");//comentrios de las instrucciones para poder configurar los switches
+                recommendations.append("1. Conéctate al switch mediante consola o SSH.\n");
+                recommendations.append("2. Entra en modo privilegiado usando el comando 'enable'.\n");
+                recommendations.append("3. Configura el nombre del switch con 'hostname'.\n");
+                recommendations.append("4. Crea y asigna VLANs según la necesidad.\n");
+                recommendations.append("5. Configura enlaces troncales con 'switchport mode trunk'.\n");
+                recommendations.append("6. Configura una dirección IP en la interfaz VLAN para la administración.\n");
+                recommendations.append("7. Guarda los cambios con el comando 'write memory'.\n\n");
+
+                recommendations.append("=== Configuración específica para ").append(numSwitchos).append(" switchos ===\n\n");
 
                 for (int i = 1; i <= numSwitchos; i++) {
-                    recommendations.append("=== Configuración para Switch ").append(i).append(" ===\n");
-
+                    StringBuilder switchConfig = new StringBuilder("=== Configuración para Switch ").append(i).append(" ===\n");
+                    //pequeña reseña por cada switch seleccionado
                     switch (i) {
                         case 1:
-                            System.out.println("- Este es el switch principal (root bridge):");
-                            System.out.println("  * Configura la VLAN de administración.");
-                            System.out.println("  * Activa el protocolo Rapid Spanning Tree (RSTP).");
-                            System.out.println("  * Habilita enlaces troncales y prioriza el tráfico crítico.");
-                            System.out.println("  * Puerto 1: Conexión al router principal.");
-                            System.out.println("  * Puerto 2-4: Enlaces troncales a switches secundarios.");
+                            switchConfig.append("- Switch principal (root bridge): Configura RSTP, VLAN de administración y enlaces troncales.\n");
                             break;
                         case 2:
-                            System.out.println("- Este switch maneja tráfico de usuarios clave:");
-                            System.out.println("  * Configura VLANs específicas para departamentos importantes.");
-                            System.out.println("  * Implementa Port Security para restringir accesos no autorizados.");
-                            System.out.println("  * Configura enlaces redundantes hacia el switch principal.");
-                            System.out.println("  * Puerto 1: Enlace troncal al switch principal.");
-                            System.out.println("  * Puertos 2-10: Conexión a estaciones de trabajo clave.");
+                            switchConfig.append("- Switch para tráfico clave: Implementa VLANs específicas y Port Security.\n");
                             break;
                         case 3:
-                            System.out.println("- Este switch es para servidores:");
-                            System.out.println("  * Configura VLANs exclusivas para servidores.");
-                            System.out.println("  * Habilita EtherChannel para mejorar el rendimiento entre servidores.");
-                            System.out.println("  * Implementa QoS para priorizar el tráfico crítico del servidor.");
-                            System.out.println("  * Puertos 1-4: Conexión a servidores principales.");
-                            System.out.println("  * Puerto 5: Enlace troncal al switch principal.");
+                            switchConfig.append("- Switch para servidores: Habilita VLANs exclusivas y QoS.\n");
                             break;
                         case 4:
-                            System.out.println("- Este switch se utiliza para puntos de acceso inalámbrico:");
-                            System.out.println("  * Configura VLANs para tráfico Wi-Fi y clientes.");
-                            System.out.println("  * Habilita medidas de seguridad como 802.1X en los puertos de acceso.");
-                            System.out.println("  * Monitorea el tráfico en tiempo real mediante SNMP.");
-                            System.out.println("  * Puertos 1-8: Conexión a puntos de acceso inalámbrico.");
+                            switchConfig.append("- Switch para puntos de acceso inalámbrico: Configura VLANs Wi-Fi y medidas de seguridad como 802.1X.\n");
                             break;
                         case 5:
-                            System.out.println("- Este switch se dedica a redundancia y backups:");
-                            System.out.println("  * Configura enlaces redundantes con el switch principal.");
-                            System.out.println("  * Realiza backups automáticos de configuración cada semana.");
-                            System.out.println("  * Monitorea logs en busca de errores o advertencias.");
-                            System.out.println("  * Puerto 1: Enlace redundante al switch principal.");
-                            System.out.println("  * Puerto 2-4: Conexión a dispositivos de almacenamiento.");
+                            switchConfig.append("- Switch para redundancia: Configura enlaces redundantes y backups automáticos.\n");
                             break;
                         default:
-                            System.out.println("- Switch genérico para expansión de red:");
-                            System.out.println("  * Configura VLANs según necesidades específicas de la zona.");
-                            System.out.println("  * Habilita enlaces troncales y spanning-tree.");
-                            System.out.println("  * Supervisa el rendimiento con SNMP y realiza pruebas de conectividad periódicas.");
-                            System.out.println("  * Puerto 1: Enlace troncal al switch principal.");
-                            System.out.println("  * Puertos 2-24: Conexión a dispositivos de la red local.");
+                            switchConfig.append("- Switch genérico: Configura VLANs y supervisa con SNMP.\n");
                             break;
                     }
 
-                    recommendations.append("- Asegúrate de probar la conectividad tras aplicar la configuración.\n\n");
+                    switchConfigurations[i - 1] = switchConfig.toString(); // Guardar en el array
+                    recommendations.append(switchConfig).append("\n");
                 }
 
                 config_recommendations.setText(recommendations.toString());
@@ -936,9 +923,5 @@ public class general_functions implements Initializable {
             alert.setContentText(message);
             alert.showAndWait();
         }
-
     }
-
-
-
 }
