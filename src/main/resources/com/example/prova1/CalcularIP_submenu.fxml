@@ -17,6 +17,8 @@
       <Button fx:id="report_cidr" layoutX="477.0" layoutY="204.0" mnemonicParsing="false" onAction="#report_mascara" text="Màscara de Xarxa" />
       <Button fx:id="report_binari" layoutX="507.0" layoutY="237.0" mnemonicParsing="false" onAction="#report_IP_binari" text="Binari" />
       <Button fx:id="calcularIP_tohome_btn" layoutX="539.0" layoutY="361.0" mnemonicParsing="false" onAction="#sceneBuild" text="Menu" />
-      <TextArea fx:id="report_area" editable="false" layoutX="20.0" layoutY="72.0" prefHeight="298.0" prefWidth="445.0" />
+      <TextArea fx:id="report_area" editable="false" layoutX="20.0" layoutY="72.0" prefHeight="150.0" prefWidth="445.0" />
+      <Label layoutX="20.0" layoutY="230.0" text="Subxarxa:" />
+      <TextArea fx:id="subnet_report_area" editable="false" layoutX="20.0" layoutY="250.0" prefHeight="120.0" prefWidth="445.0" />
    </children>
 </Pane>
