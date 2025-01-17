@@ -784,144 +784,40 @@ public class general_functions implements Initializable {
 
 
 
-    public class generalFunctions implements Initializable {
-        //variables y objetos
-        @FXML //botones
-        private Button lan_info_home_btn, home_menu_lan_info, cip, calcularIP_tohome_btn;
-        @FXML
-        private TextField ruta_projecte, n_projecte, ip_xarxa, n_routers, n_switch, n_subxarxes, n_switchos; // Añadido n_switchos
-        @FXML
-        private ChoiceBox mascares;
-        @FXML
-        private TextArea names_users_subx, report_area, config_recommendations; // Añadido config_recommendations
-
-        //datos de los proyectos existentes INICIO
-        String projectName = "";
-        String IP = "";
-        String CIDR = "";
-        String ROUTERS = "";
-        String SWITCH = "";
-        String SUBNET = "";
-        String SUBNET_INFO = "";
-
-        // Array para almacenar la configuración de cada switch
-        private String[] switchConfigurations;
-
-        //EXPRESIONES REGULARES (verificaciones de archivo/datos)
-        String empty_textfield = "[^\\d\\w\\s]"; // verifica que no haya caracteres o números
-        String is_number = "\\d+"; // verifica que solo haya números
-        String is_IP = "^((25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)\\.){3}(25[0-5]|2[0-4]\\d|1\\d{2}|[1-9]?\\d)$"; // verifica si es una IP válida
-        String istxt = "[^\\W]\\w+\\.txt$";
-        String corrtctTextArea = "[\\w]+:[\\s|\\t]*[\\d]+[^\\W]";
-        String IP_check = "^IP_DE_XARXA=\\d{1,3}(\\.\\d{1,3}){3}$";
-        String cidr_check = "^MASCARA_DE_XARXA=\\/(30|[12]?[1-9])$";
-        String general_info_check = "(ROUTERS|SWITCH|SUBXARXA)=[\\d]";
-
-        // para cambios de escena
-        private Stage stage;
-        private Scene scene;
-        private Parent root;
-
-        DirectoryChooser dc = new DirectoryChooser(); //abre a partir del buscador de archivos
-        project_Data PROJECT_DATA;
-
-        @Override
-        public void initialize(URL url, ResourceBundle resourceBundle) {
-            System.out.println("Initialize triggered");
-            fillmask();
-        }
-
-        @FXML
-        public void fillmask() {
-            System.out.println("fillmask triggered");
-            if (mascares == null) {
-                System.out.println("Error: mascares no está inicializado o no está en el formulario adecuado");
-                return;
-            }
-            for (int i = 1; i <= 30; i++) {
-                mascares.getItems().add("/" + i);
-            }
-            System.out.println("Opciones añadidas al ChoiceBox");
-        }
-
-        //condicional para que el numero de switches sea en la cantidad necesaria
-        @FXML
-        public void configureSwitchos() {
-            try {
-                int numSwitchos = Integer.parseInt(n_switchos.getText());
-
-                if (numSwitchos <= 0) {
-                    popupERROR("El número de switchos debe ser mayor que cero.", "Error");
-                    return;
-                } else if (numSwitchos > 48) {
-                    popupERROR("El número máximo permitido de switchos es 48.", "Error");
-                    return;
-                }
-
-                // Inicializar el array para almacenar configuraciones
-                switchConfigurations = new String[numSwitchos];
-
-                StringBuilder recommendations = new StringBuilder("=== Pasos Básicos para Configurar un Switch ===\n\n");//comentrios de las instrucciones para poder configurar los switches
-                recommendations.append("1. Conéctate al switch mediante consola o SSH.\n");
-                recommendations.append("2. Entra en modo privilegiado usando el comando 'enable'.\n");
-                recommendations.append("3. Configura el nombre del switch con 'hostname'.\n");
-                recommendations.append("4. Crea y asigna VLANs según la necesidad.\n");
-                recommendations.append("5. Configura enlaces troncales con 'switchport mode trunk'.\n");
-                recommendations.append("6. Configura una dirección IP en la interfaz VLAN para la administración.\n");
-                recommendations.append("7. Guarda los cambios con el comando 'write memory'.\n\n");
-
-                recommendations.append("=== Configuración específica para ").append(numSwitchos).append(" switchos ===\n\n");
-
-                for (int i = 1; i <= numSwitchos; i++) {
-                    StringBuilder switchConfig = new StringBuilder("=== Configuración para Switch ").append(i).append(" ===\n");
-                    //pequeña reseña por cada switch seleccionado
-                    switch (i) {
-                        case 1:
-                            switchConfig.append("- Switch principal (root bridge): Configura RSTP, VLAN de administración y enlaces troncales.\n");
-                            break;
-                        case 2:
-                            switchConfig.append("- Switch para tráfico clave: Implementa VLANs específicas y Port Security.\n");
-                            break;
-                        case 3:
-                            switchConfig.append("- Switch para servidores: Habilita VLANs exclusivas y QoS.\n");
-                            break;
-                        case 4:
-                            switchConfig.append("- Switch para puntos de acceso inalámbrico: Configura VLANs Wi-Fi y medidas de seguridad como 802.1X.\n");
-                            break;
-                        case 5:
-                            switchConfig.append("- Switch para redundancia: Configura enlaces redundantes y backups automáticos.\n");
-                            break;
-                        default:
-                            switchConfig.append("- Switch genérico: Configura VLANs y supervisa con SNMP.\n");
-                            break;
-                    }
-
-                    switchConfigurations[i - 1] = switchConfig.toString(); // Guardar en el array
-                    recommendations.append(switchConfig).append("\n");
-                }
-
-                config_recommendations.setText(recommendations.toString());
-                popupINFO("Configuración recomendada generada con éxito.", "Información");
-
-            } catch (NumberFormatException e) {
-                popupERROR("Por favor, introduce un número válido de switchos.", "Error");
-            }
-        }
-
-        public void popupINFO(String message, String header) {
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("Información");
-            alert.setHeaderText(header);
-            alert.setContentText(message);
-            alert.showAndWait();
-        }
-
-        public void popupERROR(String message, String header) {
-            Alert alert = new Alert(AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText(header);
-            alert.setContentText(message);
-            alert.showAndWait();
-        }
+   
+    public void Instructions() {
     }
+     //* Muestra las instrucciones para configurar switches en el área de texto.
+    @FXML
+    public void showSwitchConfigurationInstructions() {
+        StringBuilder instructions = new StringBuilder();
+        instructions.append("=== Instrucciones para Configurar Switches ===\n\n")
+                .append("1. **Conexión al Switch:**\n")
+                .append("   - Configura el terminal: 9600 baudios, 8 bits de datos, sin paridad, 1 bit de parada, sin control de flujo.\n\n")
+                .append("2. **Entrar en Modo Privilegiado:**\n")
+                .append("   - Escribe 'enable' y presiona Enter. Introduce la contraseña si es necesario.\n\n")
+                .append("3. **Entrar en Modo de Configuración Global:**\n")
+                .append("   - Escribe 'configure terminal' para habilitar la configuración global.\n\n")
+                .append("4. **Configurar el Nombre del Switch:**\n")
+                .append("   - Cambia el nombre con: 'hostname [nombre_del_switch]'\n\n")
+                .append("5. **Crear y Configurar VLANs:**\n")
+                .append("   - Crear VLAN: 'vlan [ID]', 'name [nombre_de_la_vlan]'\n")
+                .append("   - Asignar puerto: 'interface [puerto]', 'switchport mode access', 'switchport access vlan [ID]'\n\n")
+                .append("6. **Configurar Enlaces Troncales:**\n")
+                .append("   - Configurar puertos de enlace: 'interface [puerto]', 'switchport mode trunk', 'switchport trunk allowed vlan [IDs]'\n\n")
+                .append("7. **Configurar Dirección IP de Administración:**\n")
+                .append("   - 'interface vlan [ID]', 'ip address [IP] [mascara_de_subred]', 'no shutdown'\n\n")
+                .append("8. **Configurar Puerta de Enlace Predeterminada:**\n")
+                .append("   - 'ip default-gateway [IP_de_la_puerta_de_enlace]'\n\n")
+                .append("9. **Habilitar Seguridad en Puertos (Opcional):**\n")
+                .append("   - 'interface [puerto]', 'switchport port-security', 'switchport port-security maximum [número]', 'switchport port-security mac-address sticky'\n\n")
+                .append("10. **Guardar la Configuración:**\n")
+                .append("    - Guarda los cambios con: 'write memory'\n\n")
+                .append("Con estas configuraciones básicas, tu switch estará listo para integrarse en la red.\n");
+
+        // Mostrar instrucciones en el área de texto
+        report_area.setText(instructions.toString());
+    }
+
+
 }
